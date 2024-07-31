@@ -1,0 +1,157 @@
+1. Створення схеми
+CREATE SCHEMA LibraryManagement;
+
+USE LibraryManagement;
+
+CREATE TABLE authors (
+    author_id INT AUTO_INCREMENT PRIMARY KEY,
+    author_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE genres (
+    genre_id INT AUTO_INCREMENT PRIMARY KEY,
+    genre_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE books (
+    book_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    publication_year YEAR NOT NULL,
+    author_id INT,
+    genre_id INT,
+    FOREIGN KEY (author_id) REFERENCES authors(author_id),
+    FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
+);
+
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE borrowed_books (
+    borrow_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT,
+    user_id INT,
+    borrow_date DATE NOT NULL,
+    return_date DATE,
+    FOREIGN KEY (book_id) REFERENCES books(book_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+2. Заповнення таблиць
+
+INSERT INTO authors (author_name) VALUES ('John Smith');
+INSERT INTO authors (author_name) VALUES ('Jane Doe');
+
+INSERT INTO genres (genre_name) VALUES ('Science Fiction');
+INSERT INTO genres (genre_name) VALUES ('Fantasy');
+
+INSERT INTO books (title, publication_year, author_id, genre_id) VALUES ('Future World', 2022, 1, 1);
+INSERT INTO books (title, publication_year, author_id, genre_id) VALUES ('Magic Realm', 2021, 2, 2);
+
+INSERT INTO users (username, email) VALUES ('alice', 'alice@example.com');
+INSERT INTO users (username, email) VALUES ('bob', 'bob@example.com');
+
+INSERT INTO borrowed_books (book_id, user_id, borrow_date, return_date) VALUES (1, 1, '2023-01-15', '2023-02-15');
+INSERT INTO borrowed_books (book_id, user_id, borrow_date, return_date) VALUES (2, 2, '2023-03-01', '2023-03-31');
+
+3. INNER JOIN
+
+USE mydb;
+
+SELECT *
+FROM categories ca
+INNER JOIN products p on ca.id = p.category_id
+INNER JOIN suppliers su on p.supplier_id = su.id
+INNER JOIN order_details od on od.product_id = p.id
+INNER JOIN orders o on o.id = od.order_id
+INNER JOIN customers cu on o.customer_id = cu.id
+INNER JOIN employees e on o.employee_id = e.employee_id
+INNER JOIN shippers sh on o.shipper_id = sh.id;
+
+4. Завдання
+
+a) SELECT COUNT(*)
+FROM categories ca
+INNER JOIN products p on ca.id = p.category_id
+INNER JOIN suppliers su on p.supplier_id = su.id
+INNER JOIN order_details od on od.product_id = p.id
+INNER JOIN orders o on o.id = od.order_id
+INNER JOIN customers cu on o.customer_id = cu.id
+INNER JOIN employees e on o.employee_id = e.employee_id
+INNER JOIN shippers sh on o.shipper_id = sh.id;
+518
+
+b) SELECT COUNT(*)
+FROM categories ca
+RIGHT JOIN products p on ca.id = p.category_id
+LEFT JOIN suppliers su on p.supplier_id = su.id
+INNER JOIN order_details od on od.product_id = p.id
+INNER JOIN orders o on o.id = od.order_id
+INNER JOIN customers cu on o.customer_id = cu.id
+INNER JOIN employees e on o.employee_id = e.employee_id
+INNER JOIN shippers sh on o.shipper_id = sh.id;
+В моєму випадку кількість не змінюється 518
+
+c) SELECT COUNT(*)
+FROM categories ca
+INNER JOIN products p on ca.id = p.category_id
+INNER JOIN suppliers su on p.supplier_id = su.id
+INNER JOIN order_details od on od.product_id = p.id
+INNER JOIN orders o on o.id = od.order_id
+INNER JOIN customers cu on o.customer_id = cu.id
+INNER JOIN employees e on o.employee_id = e.employee_id
+INNER JOIN shippers sh on o.shipper_id = sh.id
+WHERE e.employee_id > 3 AND e.employee_id <= 10;
+317
+
+d) SELECT ca.name, COUNT(*) rows_count, AVG(od.quantity) average_quantity
+FROM categories ca
+INNER JOIN products p on ca.id = p.category_id
+INNER JOIN suppliers su on p.supplier_id = su.id
+INNER JOIN order_details od on od.product_id = p.id
+INNER JOIN orders o on o.id = od.order_id
+INNER JOIN customers cu on o.customer_id = cu.id
+INNER JOIN employees e on o.employee_id = e.employee_id
+INNER JOIN shippers sh on o.shipper_id = sh.id
+GROUP BY ca.name;
+
+e) SELECT ca.name, COUNT(*) rows_count, AVG(od.quantity) average_quantity
+FROM categories ca
+INNER JOIN products p on ca.id = p.category_id
+INNER JOIN suppliers su on p.supplier_id = su.id
+INNER JOIN order_details od on od.product_id = p.id
+INNER JOIN orders o on o.id = od.order_id
+INNER JOIN customers cu on o.customer_id = cu.id
+INNER JOIN employees e on o.employee_id = e.employee_id
+INNER JOIN shippers sh on o.shipper_id = sh.id
+GROUP BY ca.name
+HAVING average_quantity > 21;
+
+f) SELECT ca.name, COUNT(*) rows_count, AVG(od.quantity) average_quantity
+FROM categories ca
+INNER JOIN products p on ca.id = p.category_id
+INNER JOIN suppliers su on p.supplier_id = su.id
+INNER JOIN order_details od on od.product_id = p.id
+INNER JOIN orders o on o.id = od.order_id
+INNER JOIN customers cu on o.customer_id = cu.id
+INNER JOIN employees e on o.employee_id = e.employee_id
+INNER JOIN shippers sh on o.shipper_id = sh.id
+GROUP BY ca.name
+HAVING average_quantity > 21
+ORDER BY rows_count DESC;
+
+g) SELECT ca.name, COUNT(*) rows_count, AVG(od.quantity) average_quantity
+FROM categories ca
+INNER JOIN products p on ca.id = p.category_id
+INNER JOIN suppliers su on p.supplier_id = su.id
+INNER JOIN order_details od on od.product_id = p.id
+INNER JOIN orders o on o.id = od.order_id
+INNER JOIN customers cu on o.customer_id = cu.id
+INNER JOIN employees e on o.employee_id = e.employee_id
+INNER JOIN shippers sh on o.shipper_id = sh.id
+GROUP BY ca.name
+HAVING average_quantity > 21
+ORDER BY rows_count DESC
+LIMIT 4 OFFSET 1;
